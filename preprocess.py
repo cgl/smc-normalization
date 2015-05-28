@@ -1,6 +1,6 @@
 import langid
 
-def read_file_direct(self, infile, lang='en'):
+def read_file_direct( infile, lang='en'):
     with open(infile) as tweet_file:
         W = None
         for line in tweet_file:
