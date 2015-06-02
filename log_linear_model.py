@@ -1,9 +1,9 @@
+from lib.stringcmp import editdist_edits, editdist, editex
 from srilm import LM
 k = 10
 lm = LM("data/lm", lower=True)
 import numpy as np
 from math import exp
-from lib.stringcmp import editdist_edits, editdist, editex
 import difflib,string,re
 
 def calculate_best_target_tweet(tweet,index_list):
