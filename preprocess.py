@@ -39,8 +39,11 @@ def main2(filename,write=False,outfilename="output.txt"):
             print(len(filtered))
             lot =[]
             if write:
-                with codecs.open(outfilename,'w','utf-8') as outfile:
-                    outfile.write("\n".join(filtered))
+                try:
+                    with codecs.open(outfilename,'w','utf-8') as outfile:
+                        outfile.write("\n".join(filtered))
+                except UnicodeDecodeError:
+                    print "UnicodeDecodeError %s.." % filtered[0]
             lot_tokenized.extend(filtered)
     return lot_tokenized
 
