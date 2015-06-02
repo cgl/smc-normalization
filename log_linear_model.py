@@ -31,10 +31,10 @@ def calculate_f_of_n(candidates,source_word):
     return np.ones((len(candidates),2))
 
 def calculate_pairwise_feautures(source_word,cand):
-    return np.array(int(source_word[0] == cand[0]),int(source_word[-1] == cand[-1]),int(source_word[0:3] == cand[0:3]),int(len(source_word) == len(cand)))
+    return np.array([int(source_word[0] == cand[0]),int(source_word[-1] == cand[-1]),int(source_word[0:3] == cand[0:3]),int(len(source_word) == len(cand))])
 
 def calculate_similarity_feautures(source_word,cand):
-    return np.array(int(source_word[0] == cand[0]),int(source_word[-1] == cand[-1]),int(source_word[0:3] == cand[0:3]),int(len(source_word) == len(cand)))
+    return np.array([int(source_word[0] == cand[0]),int(source_word[-1] == cand[-1]),int(source_word[0:3] == cand[0:3]),int(len(source_word) == len(cand))])
 
 def find_best_target_tweet(T,tweet):
     return
