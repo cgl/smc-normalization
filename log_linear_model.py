@@ -5,16 +5,23 @@ lm = LM("data/lm", lower=True)
 import numpy as np
 from math import exp
 import difflib,string,re,mlpy
-
+KBEST=10
 def calculate_best_target_tweet(tweet,index_list):
-    Ws = np.ones(1,len(tweet))
+    Ws = []
+    Ts = []
     n_1 = -1
     for n in index_list:
         T,f_of_n,Q_prime,candidates,sorted_q_indexes  = calculate_T(tweet,n)
-        W = calculate_W(T,tweet,n,1,Q_prime)
+        W = calculate_W(T,tweet,n, Ws[-1] if len(Ws) > 0 else np.ones(1,KBEST),Q_prime)
         result = find_best_target_tweet(T,tweet)
+        Ts.append(T)
+        Ws.append(W)
         n_1 = n
-    return result
+    res_index = np.argsort(Ws[-1])[0]
+    #final_T = Ts[res_index]
+    #for i,v in enumerate(ind_list):
+     #   tweet[v] = final_T[i]
+    return Ws,Ts
 
 def calculate_T(tweet,ind):
     candidates,probs = find_all_possible_candidates(tweet,ind)
@@ -24,7 +31,7 @@ def calculate_T(tweet,ind):
     Q_prime = [np.sum(np.exp(phi * f_of_n[i])) * probs[i] for i in range(1,len(candidates))]
     Q = Q_prime/sum(Q_prime)
     sorted_q_indexes = np.argsort(Q)
-    sorted_q_indexes[0:10]
+    sorted_q_indexes[0:KBEST]
     T = [candidates[j] for j in sorted_q_indexes[0:10]]
     return T,f_of_n,Q_prime,candidates,sorted_q_indexes
 
