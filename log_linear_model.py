@@ -26,12 +26,18 @@ def calculate_T(T,tweet,ind):
 def calculate_W(W,T,tweet,n):
     pass
 
+SIMILARITY = {}
 def calculate_f_of_n(candidates,source_word):
-    f_of_n = np.empty((0,8), int)
-    for ind,cand in enumerate(candidates):
+    if not SIMILARITY.has_key(source_word):
+        SIMILARITY[source_word] = {}
+        for cand in candidates:
+            if not SIMILARITY[source_word].has_key(cand):
+                SIMILARITY[source_word][cand] = calculate_lcsr(source_word,cand)
+    f_of_n = np.empty((0,13), int)
+    for cand_ind,cand in enumerate(candidates):
         pairwise_features = calculate_pairwise_feautures(source_word,cand)
         sim_features = calculate_similarity_feautures(source_word,cand)
-        f_of_n[ind] = np.append(f_of_n, np.array([np.concatenate([pairwise_features,sim_features])]))
+        f_of_n[cand_ind] = np.append(f_of_n, np.array([np.concatenate([pairwise_features,sim_features])]))
     return f_of_n
     #return np.ones((len(candidates),2))
 
@@ -53,8 +59,10 @@ def calculate_common_letters(source_word,cand):
     return 0
 
 def calculate_similarity_feautures(source_word,cand):
-
-    return np.array([int(source_word[0] == cand[0]),int(source_word[-1] == cand[-1]),int(source_word[0:3] == cand[0:3]),int(len(source_word) == len(cand))])
+    items_list = SIMILARITY[source_word].items()
+    sorted_list = sorted(items_list, key=lambda item: item[1], reverse=True)
+    similarity_index = next((i for i, v in enumerate(sorted_list) if v[0] == "diet"), None)
+    return [int(similarity_index <= i) for i in [5,10,25,50,100,250,500,1000]]
 
 vowels = ('a', 'e', 'i', 'o', 'u', 'y')
 chars = string.lowercase + string.digits + string.punctuation
