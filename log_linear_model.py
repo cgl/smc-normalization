@@ -25,10 +25,13 @@ def calculate_W(W,T,tweet,n):
     pass
 
 def calculate_f_of_n(candidates,source_word):
-    for cand in candidates:
+    f_of_n = np.empty((0,8), int)
+    for ind,cand in enumerate(candidates):
         pairwise_features = calculate_pairwise_feautures(source_word,cand)
         sim_features = calculate_similarity_feautures(source_word,cand)
-    return np.ones((len(candidates),2))
+        f_of_n[ind] = np.append(f_of_n, np.array([np.concatenate([pairwise_features,sim_features])]))
+    return f_of_n
+    #return np.ones((len(candidates),2))
 
 def calculate_pairwise_feautures(source_word,cand):
     return np.array([int(source_word[0] == cand[0]),int(source_word[-1] == cand[-1]),int(source_word[0:3] == cand[0:3]),int(len(source_word) == len(cand)),calculate_common_letters(source_word,cand)])
@@ -42,10 +45,9 @@ def calculate_common_letters(source_word,cand):
     if float(cnt)/leng >= 0.5:
         return 1
     return 0
-    
 
 def calculate_similarity_feautures(source_word,cand):
-    return np.array(int(source_word[0] == cand[0]),int(source_word[-1] == cand[-1]),int(source_word[0:3] == cand[0:3]),int(len(source_word) == len(cand)))
+    return np.array([int(source_word[0] == cand[0]),int(source_word[-1] == cand[-1]),int(source_word[0:3] == cand[0:3]),int(len(source_word) == len(cand))])
 
 def find_best_target_tweet(T,tweet):
     return
