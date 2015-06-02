@@ -27,7 +27,7 @@ def main():
     with codecs.open('elenenler.txt','w','utf-8') as outfile:
             outfile.write("\n".join(elenenler))
 
-def main2(filename,write=False):
+def main2(filename,write=False,outfilename="output.txt"):
     lot_tokenized = []; lot =[] ;
     tweets_iter = read_file_direct(filename)
     for ind,tweet in enumerate(tweets_iter):
@@ -35,32 +35,34 @@ def main2(filename,write=False):
             lot.append(tweet)
         else:
             tokenized = tokenize_tweets(lot)
-            filtered = [tweet for tweet,tk_tweet in tokenized if filter_tweet(clean_tweet(tk_tweet))]
+            filtered = [tweet for tweet,org_tweet in tokenized if filter_tweet(clean_tweet(tweet))]
             print(len(filtered))
             lot =[]
+            if write:
+                with codecs.open(outfilename,'w','utf-8') as outfile:
+                    outfile.write("\n".join(filtered))
             lot_tokenized.extend(filtered)
-    if write:
-        with codecs.open("output.txt",'w','utf-8') as outfile:
-            outfile.write("\n".join(lot_tokenized))
     return lot_tokenized
 
 
 def clean_tweet(tweet):
     URLless_string = re.sub(r'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?«»“”‘’]))', '', tweet)
     return URLless_string
+    #" ".join([token.strip() for token in URLless_string.split(" ") if len(token) > 1 and not ispunct(token)])
+
+def ispunct(some_string):
+    return not any(char.isalnum() for char in some_string)
 
 def filter_tweet(tweet,debug=False):
     for token in tweet.split(" "):
         #print token.decode("utf-8"), token ,"-"
-        if token and (dic.check(token) or dic.check(token.lower())) and not token.startswith('@') and not token.startswith('#'):
+        if not token or token.isdigit() or dic.check(token) or token.startswith('@') or token.startswith('#'):
             if debug:
                 print "[%s] is passed" %token
             pass
-        elif token.isalpha():
-            #print token
+        else:
             return False
     return True
-
 
 def read_file_direct( infile, lang='en'):
     with open(infile) as tweet_file:
