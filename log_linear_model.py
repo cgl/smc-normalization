@@ -112,6 +112,7 @@ def calculate_lcsr(ovv,cand):
 
 def longest(ovv,cand):
     try:
+        # oov.decode('utf-8').encode('ascii',"ignore")
         ovv_int = [char_map[x] for x in ovv.encode('ascii',"ignore").lower()]
         cand_int = [char_map[y] for y in cand.encode('ascii',"ignore").lower()]
         lcs = mlpy.lcs_std(ovv_int,cand_int)[0]
