@@ -56,7 +56,7 @@ def clean_tweet(tweet):
 
 def ispunct(some_string):
     return not any(char.isalnum() for char in some_string)
-
+oov_set = set()
 def filter_tweet(tweet,debug=False):
     for token in tweet.split(" "):
         #print token.decode("utf-8"), token ,"-"
@@ -65,6 +65,7 @@ def filter_tweet(tweet,debug=False):
                 print "[%s] is passed" %token
             pass
         else:
+            oov_set.add(token)
             return False
     return True
 
