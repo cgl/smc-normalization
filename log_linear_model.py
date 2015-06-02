@@ -3,6 +3,8 @@ k = 10
 lm = LM("data/lm", lower=True)
 import numpy as np
 from math import exp
+from stringcmp import editdist_edits, editdist, editex
+import difflib,string,re
 
 def calculate_best_target_tweet(tweet,index_list):
     T = []
@@ -34,7 +36,11 @@ def calculate_f_of_n(candidates,source_word):
     #return np.ones((len(candidates),2))
 
 def calculate_pairwise_feautures(source_word,cand):
-    return np.array([int(source_word[0] == cand[0]),int(source_word[-1] == cand[-1]),int(source_word[0:3] == cand[0:3]),int(len(source_word) == len(cand)),calculate_common_letters(source_word,cand)])
+    return np.array([int(source_word[0] == cand[0]),
+                     int(source_word[-1] == cand[-1]),
+                     int(source_word[0:3] == cand[0:3]),
+                     int(len(source_word) == len(cand)),
+                     calculate_common_letters(source_word,cand)])
 
 def calculate_common_letters(source_word,cand):
     leng = len(cand)
@@ -47,7 +53,41 @@ def calculate_common_letters(source_word,cand):
     return 0
 
 def calculate_similarity_feautures(source_word,cand):
+
     return np.array([int(source_word[0] == cand[0]),int(source_word[-1] == cand[-1]),int(source_word[0:3] == cand[0:3]),int(len(source_word) == len(cand))])
+
+vowels = ('a', 'e', 'i', 'o', 'u', 'y')
+chars = string.lowercase + string.digits + string.punctuation
+char_ind = [ord(x) for x in chars]
+char_map = dict(zip(chars,char_ind))
+
+def calculate_lcsr(ovv,cand):
+    ovv = get_reduced(ovv)
+    lcs = longest(ovv,cand)
+    max_length = max(len(ovv),len(cand))
+    lcsr = float(lcs)/max_length
+    def remove_vowels(word):
+        for vowel in vowels:
+            word = word.replace(vowel, '')
+    ed = editex(remove_vowels(ovv),remove_vowels(cand))
+    simcost = lcsr/ed
+    return simcost
+
+def longest(ovv,cand):
+    try:
+        ovv_int = [char_map[x] for x in ovv.encode('ascii',"ignore").lower()]
+        cand_int = [char_map[y] for y in cand.encode('ascii',"ignore").lower()]
+        lcs = mlpy.lcs_std(ovv_int,cand_int)[0]
+    except Exception, e:
+        print(ovv,cand,e)
+        lcs = difflib.SequenceMatcher(None, ovv,cand).find_longest_match(0, len(ovv), 0, len(cand))[2]
+    return lcs
+
+def get_reduced(word,count=2):
+    replace = r'\1\1'
+    if count == 1:
+        replace = r'\1'
+    return re.sub(r'(.)\1+', replace, word.lower())
 
 def find_best_target_tweet(T,tweet):
     return
