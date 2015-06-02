@@ -37,7 +37,7 @@ def calculate_f_of_n(candidates,source_word):
     for cand_ind,cand in enumerate(candidates):
         pairwise_features = calculate_pairwise_feautures(source_word,cand)
         sim_features = calculate_similarity_feautures(source_word,cand)
-        f_of_n[cand_ind] = np.append(f_of_n, np.array([np.concatenate([pairwise_features,sim_features])]))
+        f_of_n = np.append(f_of_n, np.array([np.concatenate([pairwise_features,sim_features])]))
     return f_of_n
     #return np.ones((len(candidates),2))
 
