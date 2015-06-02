@@ -12,7 +12,7 @@ with open("oov_words.txt") as oov_file:
     lines = oov_file.readlines()
     
 print len(lines)
-oovset = set([get_reduced(line.lower()) for line in lines])
+oovset = set([get_reduced(line.strip().lower().decode('utf-8').encode('ascii',"ignore")) for line in lines])
 print len(oovset)
 oovset = set([line.strip('!^+%&/()?_-=-<>:;,.~|\}][{$#') for line in oovset])
 
