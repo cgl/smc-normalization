@@ -28,23 +28,24 @@ def main():
             outfile.write("\n".join(elenenler))
 
 def main2(filename,write=False,outfilename="output.txt"):
-    lot_tokenized = []; lot =[] ;
+    lot_tokenized = []
+    lot = []
     tweets_iter = read_file_direct(filename)
-    for ind,tweet in enumerate(tweets_iter):
-        if (ind+1) % 1000 != 0:
-            lot.append(tweet)
-        else:
-            tokenized = tokenize_tweets(lot)
-            filtered = [tweet for tweet,org_tweet in tokenized if filter_tweet(clean_tweet(tweet))]
-            print(len(filtered))
-            lot =[]
-            if write:
-                try:
-                    with codecs.open(outfilename,'w','utf-8') as outfile:
+    with codecs.open(outfilename,'w','utf-8') as outfile:
+        for ind,tweet in enumerate(tweets_iter):
+            if (ind+1) % 1000 != 0:
+                lot.append(tweet)
+            else:
+                tokenized = tokenize_tweets(lot)
+                filtered = [tweet for tweet,org_tweet in tokenized if filter_tweet(clean_tweet(tweet))]
+                print(len(filtered))
+                lot = []
+                if write:
+                    try:
                         outfile.write("\n".join(filtered))
-                except UnicodeDecodeError:
-                    print "UnicodeDecodeError %s.." % filtered[0]
-            lot_tokenized.extend(filtered)
+                    except UnicodeDecodeError:
+                        print "UnicodeDecodeError %s.." % filtered[0]
+                lot_tokenized.extend(filtered)
     return lot_tokenized
 
 
