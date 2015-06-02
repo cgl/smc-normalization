@@ -37,7 +37,6 @@ def calculate_f_of_n(candidates,source_word):
     for cand_ind,cand in enumerate(candidates):
         pairwise_features = calculate_pairwise_feautures(source_word,cand)
         sim_features = calculate_similarity_feautures(source_word,cand)
-        print(len(f_of_n))
         f_of_n = np.append(f_of_n, np.array([np.concatenate([pairwise_features,sim_features])]),axis=0)
     return f_of_n
     #return np.ones((len(candidates),2))
@@ -63,7 +62,7 @@ def calculate_similarity_feautures(source_word,cand):
     items_list = SIMILARITY[source_word].items()
     sorted_list = sorted(items_list, key=lambda item: item[1], reverse=True)
     similarity_index = next((i for i, v in enumerate(sorted_list) if v[0] == "diet"), None)
-    return [int(similarity_index <= i) for i in [5,10,25,50,100,250,500,1000]]
+    return [int(similarity_index <= i-1) for i in [5,10,25,50,100,250,500,1000]]
 
 vowels = ('a', 'e', 'i', 'o', 'u', 'y')
 chars = string.lowercase + string.digits + string.punctuation
