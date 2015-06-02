@@ -37,7 +37,6 @@ OOV= []
 def calculate_Z(T):
     for oov in OOV:
         update_similarity_dict(oov,T)
-    phi = []
     Z = []
     for target in T:
         f_of_n = np.empty((0,13), int)
@@ -46,7 +45,8 @@ def calculate_Z(T):
             pairwise_features = calculate_pairwise_feautures(oov,target)
             sim_features = calculate_similarity_feautures(oov,target)
             f_of_n = np.append(f_of_n, np.array([np.concatenate([pairwise_features,sim_features])]),axis=0)
-            print np.sum(np.exp(phi * f_of_n))
+            phi = np.ones((1,f_of_n.shape[1]))
+            #print np.sum(np.exp(phi * f_of_n))
             z_t_k_n += np.sum(np.exp(phi * f_of_n))
         Z.append(z_t_k_n)
     return Z
