@@ -7,39 +7,67 @@ from math import exp
 import difflib,string,re,mlpy
 
 def calculate_best_target_tweet(tweet,index_list):
-    T = []
-    W = []
+    Ws = np.ones(1,len(tweet))
+    n_1 = -1
     for n in index_list:
-        f_of_n,Q_prime,candidates,probs = calculate_T(T,tweet,n)
-        calculate_W(W,T,tweet,n)
+        T,f_of_n,Q_prime,candidates,sorted_q_indexes  = calculate_T(tweet,n)
+        W = calculate_W(T,tweet,n,1,Q_prime)
         result = find_best_target_tweet(T,tweet)
+        n_1 = n
     return result
 
-def calculate_T(T,tweet,ind):
+def calculate_T(tweet,ind):
     candidates,probs = find_all_possible_candidates(tweet,ind)
-    phi = np.array([1,1])
     source_word = tweet[ind]
     f_of_n = calculate_f_of_n(candidates,source_word)
-    Q_prime = [np.exp(phi * f_of_n[i]) * probs[i] for i in range(1,len(candidates))]
-    return f_of_n,Q_prime,candidates,probs
+    phi = np.ones((1,f_of_n.shape[1]))
+    Q_prime = [np.sum(np.exp(phi * f_of_n[i])) * probs[i] for i in range(1,len(candidates))]
+    Q = Q_prime/sum(Q_prime)
+    sorted_q_indexes = np.argsort(Q)
+    sorted_q_indexes[0:10]
+    T = [candidates[j] for j in sorted_q_indexes[0:10]]
+    return T,f_of_n,Q_prime,candidates,sorted_q_indexes
 
-def calculate_W(W,T,tweet,n):
-    pass
+def calculate_W(T,tweet,n,W_k_n_1,Q_prime):
+    Z = calculate_Z(T)
+    W_k_n = W_k_n_1 * (np.sum(Q_prime)/Z)
+    return  W_k_n
+
+OOV= []
+def calculate_Z(T):
+    for oov in OOV:
+        update_similarity_dict(oov,T)
+    phi = []
+    Z = []
+    for target in T:
+        f_of_n = np.empty((0,13), int)
+        z_t_k_n = 0
+        for oov in OOV:
+            pairwise_features = calculate_pairwise_feautures(oov,target)
+            sim_features = calculate_similarity_feautures(oov,target)
+            f_of_n = np.append(f_of_n, np.array([np.concatenate([pairwise_features,sim_features])]),axis=0)
+            z_t_k_n += np.sum(np.exp(phi * f_of_n))
+        Z.append(z_t_k_n)
+    return Z
+
 
 SIMILARITY = {}
 def calculate_f_of_n(candidates,source_word):
-    if not SIMILARITY.has_key(source_word):
-        SIMILARITY[source_word] = {}
-        for cand in candidates:
-            if not SIMILARITY[source_word].has_key(cand):
-                SIMILARITY[source_word][cand] = calculate_lcsr(source_word,cand)
+    update_similarity_dict(source_word,candidates)
     f_of_n = np.empty((0,13), int)
-    for cand_ind,cand in enumerate(candidates):
+    for cand in candidates:
         pairwise_features = calculate_pairwise_feautures(source_word,cand)
         sim_features = calculate_similarity_feautures(source_word,cand)
         f_of_n = np.append(f_of_n, np.array([np.concatenate([pairwise_features,sim_features])]),axis=0)
     return f_of_n
     #return np.ones((len(candidates),2))
+
+def update_similarity_dict(source_word,candidates):
+    if not SIMILARITY.has_key(source_word):
+        SIMILARITY[source_word] = {}
+    for cand in candidates:
+        if not SIMILARITY[source_word].has_key(cand):
+            SIMILARITY[source_word][cand] = calculate_lcsr(source_word,cand)
 
 def calculate_pairwise_feautures(source_word,cand):
     return np.array([int(source_word[0] == cand[0]),
