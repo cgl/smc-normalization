@@ -11,20 +11,30 @@ def calculate_best_target_tweet(tweet,index_list):
         f_of_n,Q_prime,candidates,probs = calculate_T(T,tweet,n)
         calculate_W(W,T,tweet,n)
         result = find_best_target_tweet(T,tweet)
-        return result
+    return result
 
 def calculate_T(T,tweet,ind):
     candidates,probs = find_all_possible_candidates(tweet,ind)
     phi = np.array([1,1])
-    f_of_n = calculate_f_of_n(candidates,phi)
+    source_word = tweet[ind]
+    f_of_n = calculate_f_of_n(candidates,source_word)
     Q_prime = [np.exp(phi * f_of_n[i]) * probs[i] for i in range(1,len(candidates))]
     return f_of_n,Q_prime,candidates,probs
 
 def calculate_W(W,T,tweet,n):
     pass
 
-def calculate_f_of_n(candidates,phi):
-    return np.ones((len(candidates),len(phi)))
+def calculate_f_of_n(candidates,source_word):
+    for cand in candidates:
+        pairwise_features = calculate_pairwise_feautures(source_word,cand)
+        sim_features = calculate_similarity_feautures(source_word,cand)
+    return np.ones((len(candidates),2))
+
+def calculate_pairwise_feautures(source_word,cand):
+    return np.array(int(source_word[0] == cand[0]),int(source_word[-1] == cand[-1]),int(source_word[0:3] == cand[0:3]),int(len(source_word) == len(cand)))
+
+def calculate_similarity_feautures(source_word,cand):
+    return np.array(int(source_word[0] == cand[0]),int(source_word[-1] == cand[-1]),int(source_word[0:3] == cand[0:3]),int(len(source_word) == len(cand)))
 
 def find_best_target_tweet(T,tweet):
     return
