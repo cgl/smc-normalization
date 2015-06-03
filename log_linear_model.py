@@ -48,8 +48,8 @@ OOV= []
 def calculate_Z(T):
     for oov in OOV:
         update_similarity_dict(oov,T)
-        sys.stdout.write(".")
-    sys.stdout.write("\n")
+        #sys.stdout.write(".")
+    #sys.stdout.write("\n")
     Z = []
     for target in T:
         f_of_n = np.empty((0,13), int)
