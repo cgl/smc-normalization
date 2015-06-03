@@ -11,7 +11,7 @@ def calculate_best_target_tweet(tweet,index_list):
     Ts = []
     n_1 = -1
     for n in index_list:
-        T,f_of_n,Q_prime,candidates,sorted_q_indexes  = calculate_T(tweet,n)
+        T,f_of_n,Q_prime,_,sorted_q_indexes  = calculate_T(tweet,n,Ts[-1] if len(Ts) > 0 else "<s>")
         W = calculate_W(T,tweet,n, Ws[-1] if len(Ws) > 0 else np.ones((1,KBEST)),Q_prime)
         result = find_best_target_tweet(T,tweet)
         Ts.append(T)
@@ -26,8 +26,8 @@ def calculate_best_target_tweet(tweet,index_list):
      #   tweet[v] = final_T[i]
     return tweet,norms,Ws,Ts
 
-def calculate_T(tweet,ind):
-    candidates,probs = find_all_possible_candidates(tweet,ind)
+def calculate_T(tweet,ind,target_n_1):
+    candidates,probs = find_all_possible_candidates(target_n_1)
     source_word = tweet[ind]
     f_of_n = calculate_f_of_n(candidates,source_word)
     phi = np.ones((1,f_of_n.shape[1]))
@@ -143,7 +143,22 @@ def get_reduced(word,count=2):
 def find_best_target_tweet(T,tweet):
     return
 
-def find_all_possible_candidates(tweet,ind):
+def find_all_possible_candidates(target_n_1):
+    context = [lm.vocab.intern(target_n_1)]
+    probs = []
+    candidates = []
+    best_logprob = -1e100
+    for i in xrange(lm.vocab.max_interned() + 1):
+        logprob = lm.logprob(i, context)
+        if logprob > best_logprob:
+            best_idx = i
+            best_logprob = logprob
+        if logprob > -3:
+            probs.append(logprob)
+            candidates.append(lm.vocab.extern(i))
+    return candidates,probs
+
+def find_all_possible_candidate_old(tweet,ind):
     context = [lm.vocab.intern(w) for w in tweet[ind-1:ind]+tweet[ind+1:ind+2]]
     probs = []
     candidates = []
@@ -157,6 +172,7 @@ def find_all_possible_candidates(tweet,ind):
             probs.append(logprob)
             candidates.append(lm.vocab.extern(i))
     return candidates,probs
+
 
 import han
 def get_tweets():
