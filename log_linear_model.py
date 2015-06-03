@@ -4,7 +4,7 @@ k = 10
 lm = LM("data/lm", lower=True)
 import numpy as np
 from math import exp
-import difflib,string,re,mlpy
+import difflib,string,re,mlpy,sys
 KBEST=10
 def calculate_best_target_tweet(tweet,index_list):
     Ws = []
@@ -48,6 +48,8 @@ OOV= []
 def calculate_Z(T):
     for oov in OOV:
         update_similarity_dict(oov,T)
+        sys.stdout.write(".")
+    sys.stdout.write("\n")
     Z = []
     for target in T:
         f_of_n = np.empty((0,13), int)
