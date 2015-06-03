@@ -17,11 +17,14 @@ def calculate_best_target_tweet(tweet,index_list):
         Ts.append(T)
         Ws.append(W)
         n_1 = n
-    res_index = np.argsort(Ws[-1])[0]
+    res_index = np.argsort(Ws[-1])[0][-1]
+    norms = [T[res_index] for T in Ts]
+    for i,v in enumerate(index_list):
+        tweet[v] = norms[i]
     #final_T = Ts[res_index]
     #for i,v in enumerate(ind_list):
      #   tweet[v] = final_T[i]
-    return Ws,Ts
+    return tweet,norms,Ws,Ts
 
 def calculate_T(tweet,ind):
     candidates,probs = find_all_possible_candidates(tweet,ind)
