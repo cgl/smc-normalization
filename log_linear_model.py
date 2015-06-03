@@ -12,7 +12,7 @@ def calculate_best_target_tweet(tweet,index_list):
     n_1 = -1
     for n in index_list:
         T,f_of_n,Q_prime,candidates,sorted_q_indexes  = calculate_T(tweet,n)
-        W = calculate_W(T,tweet,n, Ws[-1] if len(Ws) > 0 else np.ones(1,KBEST),Q_prime)
+        W = calculate_W(T,tweet,n, Ws[-1] if len(Ws) > 0 else np.ones((1,KBEST)),Q_prime)
         result = find_best_target_tweet(T,tweet)
         Ts.append(T)
         Ws.append(W)
