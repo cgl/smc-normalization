@@ -40,6 +40,7 @@ def calculate_T(tweet,ind):
 
 def calculate_W(T,tweet,n,W_k_n_1,Q_prime):
     Z = calculate_Z(T)
+    print(Z)
     W_k_n = W_k_n_1 * (np.sum(Q_prime)/Z)
     return  W_k_n
 
